@@ -1,4 +1,5 @@
 use std::env;
+use std::fs;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -36,6 +37,12 @@ ACTIONs:
     );
 }
 
-fn make_spritesheet() {}
+fn make_spritesheet() {
+    let paths = fs::read_dir(".").unwrap();
+
+    for path in paths {
+        println!("{}", path.unwrap().file_name().display());
+    }
+}
 
 fn visualize_animation() {}
