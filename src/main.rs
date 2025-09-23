@@ -47,6 +47,7 @@ fn make_spritesheet() {
         .filter(|x| re.is_match(x.as_ref().unwrap().file_name().to_str().unwrap()))
         .collect();
 
+    #[cfg(debug_assertions)]
     for path in filtered_paths {
         println!("{}", path.unwrap().file_name().display());
     }
