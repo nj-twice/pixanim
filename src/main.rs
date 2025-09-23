@@ -41,16 +41,68 @@ ACTIONs:
 fn make_spritesheet() {
     let paths = fs::read_dir(".").unwrap();
 
-    let re = Regex::new("^[0-9]_[0-9].png$").unwrap();
+    let re = Regex::new("^[0-9]+_[0-9]+.png$").unwrap();
 
     let filtered_paths: Vec<_> = paths
         .filter(|x| re.is_match(x.as_ref().unwrap().file_name().to_str().unwrap()))
+        .map(|x| x.unwrap())
         .collect();
 
     #[cfg(debug_assertions)]
-    for path in filtered_paths {
-        println!("{}", path.unwrap().file_name().display());
+    {
+        println!("Printing filtered paths");
+        for path in &filtered_paths {
+            println!("{}", path.file_name().display());
+        }
+        println!("------\n");
     }
+
+    // Make it a Vec of owned Strings to make work easier
+    let path_strings: Vec<_> = filtered_paths.iter()
+        .map(|x| x.file_name().to_str().unwrap().to_string())
+        .collect();
+
+    // From now on, we assume that all filtered paths are actual PNG files
+
+    // Check that the row no.1 exists
+    let one_counts = path_strings
+        .iter()
+        .filter(|x| x.as_str().starts_with("1_"))
+        .count();
+
+    if one_counts == 0 {
+        panic!("Error: row no.1 wasn't found!")
+    }
+
+
+    // Check that no number skips happened:
+    // Parse frame numbers into a sorted vector of uints
+    // Compare length of vec and largest frame number
+    // If they differ, error.
+
+    let mut row_no = 1;
+
+    let mut ones: Vec<_> = path_strings.iter()
+        .filter(|x| x.as_str().starts_with(format!("{row_no}_").as_str()))
+        .map(|x| x.split_once('_').unwrap().1)
+        .map(|x| x.split_once('.').unwrap().0.parse::<u32>().unwrap())
+        .collect();
+    ones.sort();
+    ones.reverse();
+
+    let largest = *ones.get(0).unwrap();
+    let length = ones.len() as u32;
+    if length != largest {
+        println!("At row no.{row_no}");
+        println!("Largest frame index: {largest} != Length: {length}");
+        panic!("Number skip happened!")
+    }
+
+    // Determine number of columns for all rows from first row
+
+    // loop {
+    //     row_no += 1;
+    // }
 }
 
 fn visualize_animation() {}
