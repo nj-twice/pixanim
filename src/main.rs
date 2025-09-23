@@ -1,3 +1,4 @@
+use regex::Regex;
 use std::env;
 use std::fs;
 
@@ -40,7 +41,13 @@ ACTIONs:
 fn make_spritesheet() {
     let paths = fs::read_dir(".").unwrap();
 
-    for path in paths {
+    let re = Regex::new("^[0-9]_[0-9].png$").unwrap();
+
+    let filtered_paths: Vec<_> = paths
+        .filter(|x| re.is_match(x.as_ref().unwrap().file_name().to_str().unwrap()))
+        .collect();
+
+    for path in filtered_paths {
         println!("{}", path.unwrap().file_name().display());
     }
 }
