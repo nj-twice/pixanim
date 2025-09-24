@@ -38,7 +38,8 @@ ACTIONs:
     );
 }
 
-fn make_spritesheet() {
+
+fn check_paths() {
     let paths = fs::read_dir(".").unwrap();
 
     let re = Regex::new("^[0-9]+_[0-9]+.png$").unwrap();
@@ -183,6 +184,10 @@ fn make_spritesheet() {
         println!("Number of columns of row no.{row_no} matches that of 1st row.");
 
     }
+}
+
+fn make_spritesheet() {
+    check_paths();
 }
 
 fn visualize_animation() {}
