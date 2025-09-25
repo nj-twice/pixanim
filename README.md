@@ -24,7 +24,7 @@ You can get more info by running:
 pixanim help
 ```
 
-## Naming conventions
+## Naming rules
 
 In order for `pixanim` to correctly compile your images, they must
 follow a simple set of conventions.
