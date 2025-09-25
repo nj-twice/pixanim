@@ -7,7 +7,10 @@ For now, it doesn't do much, but in its current form, it's enough for me!
 # How to use it?
 
 Its main purpose is to compile a bunch of individual image files
-in the current directory into a spritesheet.
+in the current directory into a sprite sheet.
+
+It will also automatically add some padding around your sprites
+to prevent texture bleeding.
 
 Inside a directory of images, simply run:
 
@@ -42,7 +45,7 @@ are **not**.
 
 ## What are these numbers?
 
-`x` represents the row in the final spritesheet, that is, an animation and
+`x` represents the row in the final sprite sheet, that is, an animation and
 `y` represents the column, that is, an individual frame of an animation.
 
 # Compiling
