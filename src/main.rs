@@ -39,34 +39,12 @@ ACTIONs:
 }
 
 
-fn check_paths() {
-    let paths = fs::read_dir(".").unwrap();
-
-    let re = Regex::new("^[0-9]+_[0-9]+.png$").unwrap();
-
-    let filtered_paths: Vec<_> = paths
-        .filter(|x| re.is_match(x.as_ref().unwrap().file_name().to_str().unwrap()))
-        .map(|x| x.unwrap())
-        .collect();
-
-    #[cfg(debug_assertions)]
-    {
-        println!("Printing filtered paths");
-        for path in &filtered_paths {
-            println!("{}", path.file_name().display());
-        }
-        println!("------\n");
-    }
-
-    // Make it a Vec of owned Strings to make work easier
-    let path_strings: Vec<_> = filtered_paths.iter()
-        .map(|x| x.file_name().to_str().unwrap().to_string())
-        .collect();
-
-    // From now on, we assume that all filtered paths are actual PNG files
+fn check_paths(image_paths: &Vec<String>) {
+    // Here, we don't care that the files are actually PNGs or not.
+    // We just enforce the naming convetion.
 
     // Check that the row no.1 exists
-    let one_counts = path_strings
+    let one_counts = image_paths
         .iter()
         .filter(|x| x.as_str().starts_with("1_"))
         .count();
@@ -82,7 +60,7 @@ fn check_paths() {
 
     let mut row_no: u32 = 1;
 
-    let mut ones: Vec<_> = path_strings.iter()
+    let mut ones: Vec<_> = image_paths.iter()
         .filter(|x| x.as_str().starts_with(format!("{row_no}_").as_str()))
         .map(|x| x.split_once('_').unwrap().1)
         .map(|x| x.split_once('.').unwrap().0.parse::<u32>().unwrap())
@@ -111,7 +89,7 @@ fn check_paths() {
 
         // Check for existence
 
-        let num_count = path_strings
+        let num_count = image_paths
             .iter()
             .filter(|x| x.as_str().starts_with(format!("{row_no}_").as_str()))
             .count();
@@ -126,7 +104,7 @@ fn check_paths() {
             // Else, the row from the last iteration was the last,
             // we break out of the loop.
 
-            let remaining_paths = path_strings
+            let remaining_paths = image_paths
                 .iter()
                 // Skip the first checked elements from the past rows
                 .skip( (row_no as usize - 1) * (max_columns as usize) )
@@ -154,7 +132,7 @@ fn check_paths() {
 
         // Check that no skips happened
 
-        let mut columns: Vec<_> = path_strings.iter()
+        let mut columns: Vec<_> = image_paths.iter()
             .filter(|x| x.as_str().starts_with(format!("{row_no}_").as_str()))
             .map(|x| x.split_once('_').unwrap().1)
             .map(|x| x.split_once('.').unwrap().0.parse::<u32>().unwrap())
@@ -187,7 +165,34 @@ fn check_paths() {
 }
 
 fn make_spritesheet() {
-    check_paths();
+    let paths = get_images_paths();
+    check_paths(&paths);
+}
+
+fn get_images_paths() -> Vec<String> {
+    let paths = fs::read_dir(".").unwrap();
+    let re = Regex::new("^[0-9]+_[0-9]+.png$").unwrap();
+
+    let filtered_paths: Vec<_> = paths
+        .filter(|x| re.is_match(x.as_ref().unwrap().file_name().to_str().unwrap()))
+        .map(|x| x.unwrap())
+        .collect();
+
+    #[cfg(debug_assertions)]
+    {
+        println!("Printing filtered paths");
+        for path in &filtered_paths {
+            println!("{}", path.file_name().display());
+        }
+        println!("------\n");
+    }
+
+    // Make it a Vec of owned Strings to make work easier
+    let path_strings: Vec<_> = filtered_paths.iter()
+        .map(|x| x.file_name().to_str().unwrap().to_string())
+        .collect();
+
+    path_strings
 }
 
 fn visualize_animation() {}
