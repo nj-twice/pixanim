@@ -1,6 +1,9 @@
 use regex::Regex;
 use std::env;
 use std::fs;
+use image::ImageReader;
+
+const FIRST_FRAME: &str = "1_1.png";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -116,7 +119,7 @@ fn check_paths(image_paths: &Vec<String>) {
             if remaining_paths == 0  {
 
                 #[cfg(debug_assertions)]
-                println!("No unchecked path remaining. Bye!");
+                println!("No unchecked path remaining. Continuing.");
 
                 break
             }
@@ -167,6 +170,48 @@ fn check_paths(image_paths: &Vec<String>) {
 fn make_spritesheet() {
     let paths = get_images_paths();
     check_paths(&paths);
+    check_image_dimensions(&paths);
+}
+
+fn check_image_dimensions(paths: &Vec<String>) {
+    let init_dimensions = ImageReader::open(FIRST_FRAME)
+        .unwrap().into_dimensions();
+
+    match init_dimensions {
+        Err(_) => {
+             println!("Error: probably not an image");
+             panic!("Image error!");
+             }
+        Ok(_) => ()
+    }
+
+    let init_dimensions = init_dimensions.unwrap();
+
+    #[cfg(debug_assertions)]
+    {
+        println!("Printing found dimensions");
+        dbg!(init_dimensions);
+    }
+
+    for file in paths {
+        let dimensions = ImageReader::open(file).unwrap().into_dimensions();
+
+        match dimensions {
+            Err(_) => {
+             println!("Error: {file} is probably not an image");
+             panic!("Image error!");
+            }
+            Ok(_) => ()
+        }
+
+        let dimensions = dimensions.unwrap();
+
+        if dimensions != init_dimensions {
+            let x = dimensions.0;
+            let y = dimensions.1;
+            panic!("Dimensions of {file} ({x}×{y}) don't match those of first frame.")
+        }
+    }
 }
 
 fn get_images_paths() -> Vec<String> {
