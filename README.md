@@ -15,6 +15,12 @@ Inside a directory of images, simply run:
 pixanim make
 ```
 
+You can get more info by running:
+
+```sh
+pixanim help
+```
+
 ## Naming conventions
 
 In order for `pixanim` to correctly compile your images, they must
