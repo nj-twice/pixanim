@@ -21,6 +21,7 @@ fn main() {
         "make" => make_spritesheet(),
         "play" => visualize_animation(),
         "help" => show_help(),
+        // TODO: add an edit subcommand: deconstructs a sprite sheet into properly named files, wait for edits, then rebuild the sprite sheet
         _ => panic!("Invalid action!"),
     }
 }
@@ -295,4 +296,10 @@ fn get_images_paths() -> Vec<String> {
     path_strings
 }
 
+// TODO: use macroquad to play animation
+//       - interactively changeg FPS
+//       - select which row (animation)
+//       - select columns range (frames)
+//       - display some info from a generated info file?
+// TODO: detect existence of an already generated sprite sheet
 fn visualize_animation() {}
